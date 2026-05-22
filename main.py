@@ -30,3 +30,11 @@ def add_expenses(date,amount,category,subcategory="",note=""):
             (date,amount,category,subcategory,note)
         )
         return {"status" : "ok","id": cur.lastrowid}
+
+@mcp.tool()
+def list_expenses():
+    '''Showing the listed expenses'''
+    with sqlite3.connect(DB_PATH) as c:
+        cur = c.execute(
+            "SELECT id,date,amount,category,subcategory,note FROM expenses ORDER BY id ASC"
+        )
