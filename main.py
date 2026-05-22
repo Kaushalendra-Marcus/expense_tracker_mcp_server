@@ -1,16 +1,32 @@
-import random
 from fastmcp import FastMCP
-mcp = FastMCP("expense tracker")
+import os
+import sqlite3
+DB_PATH = os.path.join(os.path.dirname(__file__),"expenses.db") #database file path
 
-@mcp.tool
-def rool_dice(n_dice : int=1)-> list[int]:
-    """Roll n_dice 6-sided dice and return the results"""
-    return [random.randint(1,6) for _ in range(n_dice)]
+mcp = FastMCP("expense-tracker")
 
-@mcp.tool
-def add(a: float, b: float)->float:
-    """adding two numbers a and b"""
-    return a+b
+def init_db():
+    with sqlite3.connect(DB_PATH) as c:
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS expenses(
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  date TEXT NOT NULL,
+                  amount REAL NOT NULL,
+                  category TEXT NOT NULL,
+                  subcategory TEXT DEFAULT '',
+                  note TEXT DEFAULT ''
+            )
+        """)
 
-if __name__ == "__main__":
-    mcp.run()
+init_db()
+
+
+@mcp.tool()
+def add_expenses(date,amount,category,subcategory="",note=""):
+    '''Adding a new expense entry to the database'''
+    with sqlite3.connect(DB_PATH) as c:
+        cur = c.execute(
+            "INSERT INTO expenses(date,amount,category,subcategory,note) VALUES(?,?,?,?,?)",
+            (date,amount,category,subcategory,note)
+        )
+        return {"status" : "ok","id": cur.lastrowid}
