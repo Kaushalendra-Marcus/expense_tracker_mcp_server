@@ -38,3 +38,8 @@ def list_expenses():
         cur = c.execute(
             "SELECT id,date,amount,category,subcategory,note FROM expenses ORDER BY id ASC"
         )
+        cols = [d[0] for d in cur.description]
+        return [dict(zip(cols,r)) for r in cur.fetchall()]
+
+if __name__ == "__main.py__":
+    mcp.run()
