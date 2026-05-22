@@ -1,2 +1,2 @@
 import random
-from fastmcp import fastmcp
+from fastmcp import FastMCP
